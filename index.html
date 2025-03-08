@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+        }
+        .calculator {
+            width: 250px;
+            background: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .display {
+            width: 100%;
+            height: 50px;
+            text-align: right;
+            font-size: 2em;
+            margin-bottom: 10px;
+            padding-right: 10px;
+            border: none;
+            background: #666;
+            color: white;
+        }
+        .result {
+            width: 100%;
+            height: 30px;
+            text-align: right;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            padding-right: 10px;
+            border: none;
+            background: #555;
+            color: #ddd;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            height: 50px;
+            font-size: 1.5em;
+            border: none;
+            background: #555;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:active {
+            background: #777;
+        }
+        .equal {
+            background: #f90;
+            color: white;
+        }
+        .special {
+            background: #4caf50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" disabled>
+        <input type="text" class="result" id="result" disabled>
+        <div class="buttons">
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="equal" onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="special" onclick="appendToDisplay('%')">%</button>
+            <button class="special" onclick="appendToDisplay('Math.sqrt('); setTimeout(() => appendToDisplay(')'), 0);">√</button>
+            <button class="special" onclick="appendToDisplay('Math.pow('); setTimeout(() => appendToDisplay(')'), 0);">xⁿ</button>
+        </div>
+    </div>
+    <script>
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            display.value += value;
+            updateResult();
+        }
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+            document.getElementById('result').value = '';
+        }
+        function calculate() {
+            try {
+                document.getElementById('display').value = eval(document.getElementById('display').value);
+                document.getElementById('result').value = '';
+            } catch {
+                document.getElementById('display').value = 'Error';
+                document.getElementById('result').value = '';
+            }
+        }
+        function updateResult() {
+            const display = document.getElementById('display').value;
+            const result = document.getElementById('result');
+            try {
+                result.value = eval(display);
+            } catch {
+                result.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
