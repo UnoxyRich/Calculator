@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <style>
         body {
@@ -13,6 +13,7 @@
             background-color: #333;
             color: white;
             margin: 0;
+            overflow: hidden; /* Prevent scrolling */
         }
         .calculator {
             width: 100%;
@@ -44,7 +45,7 @@
             font-size: 1.5em;
             background: #555;
             color: #ddd;
-            opacity: 0;
+            opacity: 0.5;
             transform: translateX(-100%);
             transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
         }
@@ -119,8 +120,8 @@
         function calculate() {
             try {
                 display.value = eval(display.value);
-                result.value = '';
-                result.classList.remove('show');
+                result.value = display.value;
+                result.classList.add('show');
             } catch {
                 display.value = 'Error';
                 result.value = '';
@@ -131,7 +132,7 @@
         function updateResult() {
             try {
                 result.value = eval(display.value);
-                result.classList.add('show');
+                result.classList.remove('show');
             } catch {
                 result.value = '';
                 result.classList.remove('show');
