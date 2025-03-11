@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Smart Calculator</title>
+    <title>Calculator</title>
     <style>
         body {
             display: flex;
@@ -14,7 +14,6 @@
             color: white;
             margin: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
         }
         .calculator {
             width: 100%;
@@ -22,7 +21,7 @@
             background: #444;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
             position: relative;
         }
@@ -30,22 +29,35 @@
             width: 100%;
             text-align: right;
             margin-bottom: 10px;
-            padding: 10px;
+            padding-right: 10px;
             border: none;
             background: #666;
             color: white;
             box-sizing: border-box;
-            font-size: 1.8em;
-            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+        }
+        .display {
+            height: 60px;
+            font-size: 2em;
         }
         .result {
-            background: #555;
+            height: 40px;
+            font-size: 1.5em;
+            background: #222;
             color: #ddd;
             opacity: 0;
-            transition: opacity 0.2s ease-in-out;
+            transform: translateY(-20px);
         }
         .result.show {
             opacity: 1;
+            transform: translateY(0);
+            animation: pop 0.4s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
         }
         .buttons {
             display: grid;
@@ -61,27 +73,29 @@
             color: white;
             cursor: pointer;
             border-radius: 5px;
-            transition: 0.2s;
+            box-sizing: border-box;
+            transition: background 0.2s;
         }
         button:active {
-            transform: scale(0.95);
+            background: #777;
         }
-        .equal {
+        .equal, .solve {
             background: #f90;
             color: white;
+            transition: transform 0.2s ease-in-out;
         }
-        .clear {
-            background: #e74c3c;
+        .equal:active, .solve:active {
+            transform: scale(0.95);
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
 </head>
 <body>
     <div class="calculator">
         <input type="text" class="display" id="display" disabled>
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
-            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="clearDisplay()">C</button>
             <button onclick="appendToDisplay('/')">/</button>
             <button onclick="appendToDisplay('*')">*</button>
             <button onclick="appendToDisplay('-')">-</button>
@@ -92,7 +106,7 @@
             <button onclick="appendToDisplay('4')">4</button>
             <button onclick="appendToDisplay('5')">5</button>
             <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('=')">=</button>
+            <button class="equal" onclick="calculate()">=</button>
             <button onclick="appendToDisplay('1')">1</button>
             <button onclick="appendToDisplay('2')">2</button>
             <button onclick="appendToDisplay('3')">3</button>
@@ -100,21 +114,16 @@
             <button onclick="appendToDisplay('.')">.</button>
             <button onclick="appendToDisplay('x')">x</button>
             <button onclick="appendToDisplay('y')">y</button>
-            <button class="equal" onclick="calculate()">Solve</button>
+            <button class="solve" onclick="solveEquation()">Solve</button>
         </div>
     </div>
-
     <script>
         const display = document.getElementById('display');
         const result = document.getElementById('result');
 
         function appendToDisplay(value) {
-            const lastChar = display.value.slice(-1);
-
-            // Prevent multiple operators in a row
-            if ("+-*/=".includes(lastChar) && "+-*/=".includes(value)) return;
-
             display.value += value;
+            updateResult();
         }
 
         function clearDisplay() {
@@ -125,30 +134,40 @@
 
         function calculate() {
             try {
-                let expression = display.value.replace(/x/g, '*'); // Replace 'x' with '*'
-                
-                if (expression.includes('=')) {
-                    // Solve for x or y
-                    let [lhs, rhs] = expression.split('=');
-                    let equation = math.simplify(`${lhs} - (${rhs})`);
-                    
-                    if (equation.toString().includes("x") || equation.toString().includes("y")) {
-                        // Solve for x or y
-                        let solutions = math.solve(equation.toString(), ['x', 'y']);
+                result.value = math.evaluate(display.value);
+                result.classList.add('show');
+            } catch (error) {
+                result.value = 'Error';
+                result.classList.add('show');
+            }
+        }
 
-                        if (solutions.x !== undefined) {
-                            result.value = `x = ${solutions.x}`;
-                        } else if (solutions.y !== undefined) {
-                            result.value = `y = ${solutions.y}`;
-                        } else {
-                            result.value = "No solution";
-                        }
-                    } else {
-                        result.value = "Equation balanced!";
-                    }
+        function updateResult() {
+            try {
+                result.value = math.evaluate(display.value);
+                result.classList.remove('show');
+            } catch (error) {
+                result.value = '';
+                result.classList.remove('show');
+            }
+        }
+
+        function solveEquation() {
+            try {
+                const input = display.value;
+                if (!input.includes('=')) {
+                    result.value = "No '=' in equation";
+                    result.classList.add('show');
+                    return;
+                }
+
+                const [left, right] = input.split('=');
+                const solution = math.solve(left + '- (' + right + ')', 'y'); // Solve for 'y' by default
+
+                if (solution.length === 0) {
+                    result.value = "No Solution";
                 } else {
-                    // Evaluate normal math expressions
-                    result.value = math.evaluate(expression);
+                    result.value = `y = ${solution[0]}`;
                 }
 
                 result.classList.add('show');
@@ -160,13 +179,13 @@
 
         document.addEventListener('keydown', function(event) {
             const key = event.key;
-
-            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === '=' || key === 'x' || key === 'y') {
+            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === 'x' || key === 'y') {
                 appendToDisplay(key);
-            } else if (key === 'Enter') {
+            } else if (key === 'Enter' || key === '=') {
                 calculate();
             } else if (key === 'Backspace') {
                 display.value = display.value.slice(0, -1);
+                updateResult();
             } else if (key === 'Escape') {
                 clearDisplay();
             }
