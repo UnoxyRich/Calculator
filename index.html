@@ -101,6 +101,8 @@
             <button onclick="appendToDisplay('3')">3</button>
             <button onclick="appendToDisplay('0')">0</button>
             <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('x')">x</button>
+            <button onclick="appendToDisplay('y')">y</button>
         </div>
     </div>
     <script>
@@ -120,10 +122,10 @@
 
         function calculate() {
             try {
-                display.value = math.evaluate(display.value);
-                result.value = display.value;
+                const scope = { x: 1, y: 1 }; // Example values for x and y
+                result.value = math.evaluate(display.value, scope);
                 result.classList.add('show');
-            } catch {
+            } catch (error) {
                 display.value = 'Error';
                 result.value = '';
                 result.classList.remove('show');
@@ -132,9 +134,10 @@
 
         function updateResult() {
             try {
-                result.value = math.evaluate(display.value);
+                const scope = { x: 1, y: 1 }; // Example values for x and y
+                result.value = math.evaluate(display.value, scope);
                 result.classList.remove('show');
-            } catch {
+            } catch (error) {
                 result.value = '';
                 result.classList.remove('show');
             }
@@ -142,9 +145,9 @@
 
         document.addEventListener('keydown', function(event) {
             const key = event.key;
-            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+') {
+            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === 'x' || key === 'y') {
                 appendToDisplay(key);
-            } else if (key === 'Enter') {
+            } else if (key === 'Enter' || key === '=') {
                 calculate();
             } else if (key === 'Backspace') {
                 display.value = display.value.slice(0, -1);
