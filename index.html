@@ -77,6 +77,7 @@
             color: white;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
 </head>
 <body>
     <div class="calculator">
@@ -119,7 +120,7 @@
 
         function calculate() {
             try {
-                display.value = eval(display.value);
+                display.value = math.evaluate(display.value);
                 result.value = display.value;
                 result.classList.add('show');
             } catch {
@@ -131,7 +132,7 @@
 
         function updateResult() {
             try {
-                result.value = eval(display.value);
+                result.value = math.evaluate(display.value);
                 result.classList.remove('show');
             } catch {
                 result.value = '';
