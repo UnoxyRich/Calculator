@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Calculator</title>
+    <title>Smart Calculator</title>
     <style>
         body {
             display: flex;
@@ -13,7 +13,8 @@
             background-color: #333;
             color: white;
             margin: 0;
-            overflow: hidden; /* Prevent scrolling */
+            overflow: hidden;
+            font-family: Arial, sans-serif;
         }
         .calculator {
             width: 100%;
@@ -29,20 +30,15 @@
             width: 100%;
             text-align: right;
             margin-bottom: 10px;
-            padding-right: 10px;
+            padding: 10px;
             border: none;
             background: #666;
             color: white;
             box-sizing: border-box;
-            position: relative;
-        }
-        .display {
-            height: 60px;
-            font-size: 2em;
+            font-size: 1.8em;
+            border-radius: 5px;
         }
         .result {
-            height: 40px;
-            font-size: 1.5em;
             background: #555;
             color: #ddd;
             opacity: 0;
@@ -68,13 +64,17 @@
             cursor: pointer;
             border-radius: 5px;
             box-sizing: border-box;
+            transition: 0.2s;
         }
         button:active {
-            background: #777;
+            transform: scale(0.95);
         }
         .equal {
             background: #f90;
             color: white;
+        }
+        .clear {
+            background: #e74c3c;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
@@ -84,7 +84,7 @@
         <input type="text" class="display" id="display" disabled>
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
-            <button onclick="clearDisplay()">C</button>
+            <button class="clear" onclick="clearDisplay()">C</button>
             <button onclick="appendToDisplay('/')">/</button>
             <button onclick="appendToDisplay('*')">*</button>
             <button onclick="appendToDisplay('-')">-</button>
@@ -95,7 +95,7 @@
             <button onclick="appendToDisplay('4')">4</button>
             <button onclick="appendToDisplay('5')">5</button>
             <button onclick="appendToDisplay('6')">6</button>
-            <button class="equal" onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('=')">=</button>
             <button onclick="appendToDisplay('1')">1</button>
             <button onclick="appendToDisplay('2')">2</button>
             <button onclick="appendToDisplay('3')">3</button>
@@ -103,15 +103,21 @@
             <button onclick="appendToDisplay('.')">.</button>
             <button onclick="appendToDisplay('x')">x</button>
             <button onclick="appendToDisplay('y')">y</button>
+            <button class="equal" onclick="calculate()">Solve</button>
         </div>
     </div>
+
     <script>
         const display = document.getElementById('display');
         const result = document.getElementById('result');
 
         function appendToDisplay(value) {
+            const lastChar = display.value.slice(-1);
+
+            // Prevent multiple operators in a row
+            if ("+-*/=".includes(lastChar) && "+-*/=".includes(value)) return;
+
             display.value += value;
-            updateResult();
         }
 
         function clearDisplay() {
@@ -122,36 +128,42 @@
 
         function calculate() {
             try {
-                const scope = { x: 1, y: 1 }; // Example values for x and y
-                result.value = math.evaluate(display.value, scope);
+                let expression = display.value.replace(/x/g, '*'); // Replace 'x' with '*'
+                
+                if (expression.includes('=')) {
+                    // Solve for x or y
+                    let [lhs, rhs] = expression.split('=');
+                    let equation = math.simplify(`${lhs} - (${rhs})`);
+                    let solutions = math.solve(equation, ['x', 'y']);
+
+                    if (solutions.x !== undefined) {
+                        result.value = `x = ${solutions.x}`;
+                    } else if (solutions.y !== undefined) {
+                        result.value = `y = ${solutions.y}`;
+                    } else {
+                        result.value = "No solution";
+                    }
+                } else {
+                    // Evaluate normal math expressions
+                    result.value = math.evaluate(expression);
+                }
+
                 result.classList.add('show');
             } catch (error) {
-                display.value = 'Error';
-                result.value = '';
-                result.classList.remove('show');
-            }
-        }
-
-        function updateResult() {
-            try {
-                const scope = { x: 1, y: 1 }; // Example values for x and y
-                result.value = math.evaluate(display.value, scope);
-                result.classList.remove('show');
-            } catch (error) {
-                result.value = '';
+                result.value = "Error";
                 result.classList.remove('show');
             }
         }
 
         document.addEventListener('keydown', function(event) {
             const key = event.key;
-            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === 'x' || key === 'y') {
+
+            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === '=' || key === 'x' || key === 'y') {
                 appendToDisplay(key);
-            } else if (key === 'Enter' || key === '=') {
+            } else if (key === 'Enter') {
                 calculate();
             } else if (key === 'Backspace') {
                 display.value = display.value.slice(0, -1);
-                updateResult();
             } else if (key === 'Escape') {
                 clearDisplay();
             }
