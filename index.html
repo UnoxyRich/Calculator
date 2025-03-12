@@ -162,12 +162,13 @@
                 }
 
                 const [left, right] = input.split('=');
-                const solution = math.solve(left + '- (' + right + ')', 'y'); // Solve for 'y' by default
+                const simplified = math.simplify(left + '- (' + right + ')');
+                const solution = math.evaluate(simplified, { y: 0 });
 
-                if (solution.length === 0) {
-                    result.value = "No Solution";
+                if (solution === 0) {
+                    result.value = `y = 0`;
                 } else {
-                    result.value = `y = ${solution[0]}`;
+                    result.value = `y = ${solution}`;
                 }
 
                 result.classList.add('show');
