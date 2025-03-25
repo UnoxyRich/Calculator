@@ -159,12 +159,13 @@
 
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
-                const solutions = math.solve(simplified, 'x');
+                const simplifiedEquation = math.simplify(simplified);
+                const solutions = math.evaluate(`solve(${simplifiedEquation.toString()}, x)`);
 
                 if (solutions.length === 0) {
                     result.value = "No solution";
                 } else {
-                    result.value = `y = ${solutions[0]}`;
+                    result.value = `x = ${solutions[0]}`;
                 }
 
                 result.classList.add('show');
