@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <style>
+        /* General body styling */
         body {
             display: flex;
             justify-content: center;
@@ -15,6 +16,8 @@
             margin: 0;
             overflow: hidden;
         }
+
+        /* Calculator container styling */
         .calculator {
             width: 100%;
             max-width: 400px;
@@ -24,6 +27,8 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
         }
+
+        /* Display and result input fields styling */
         .display, .result {
             width: 100%;
             text-align: right;
@@ -35,10 +40,14 @@
             box-sizing: border-box;
             transition: all 0.3s ease-in-out;
         }
+
+        /* Main display styling */
         .display {
             height: 60px;
             font-size: 2em;
         }
+
+        /* Result field styling */
         .result {
             height: 40px;
             font-size: 1.5em;
@@ -47,15 +56,21 @@
             opacity: 0;
             transform: translateX(50%);
         }
+
+        /* Show result animation */
         .result.show {
             opacity: 0.8;
             transform: translateX(0);
         }
+
+        /* Button grid layout */
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
+
+        /* Button styling */
         button {
             width: 100%;
             height: 60px;
@@ -67,24 +82,34 @@
             border-radius: 5px;
             transition: background 0.3s, transform 0.2s;
         }
+
+        /* Button hover effect */
         button:hover {
             background: #888;
         }
+
+        /* Button active effect */
         button:active {
             background: #d4d2ff;
             transform: scale(0.95);
         }
+
+        /* Special styling for equal and solve buttons */
         .equal, .solve {
             background: #f90;
         }
     </style>
+    <!-- Math.js library for mathematical calculations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
 </head>
 <body>
     <div class="calculator">
+        <!-- Display for user input -->
         <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
+        <!-- Display for calculation result -->
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
+            <!-- Calculator buttons -->
             <button onclick="clearDisplay()">C</button>
             <button onclick="appendToDisplay('/')">/</button>
             <button onclick="appendToDisplay('*')">*</button>
@@ -106,22 +131,27 @@
         </div>
     </div>
     <script>
+        // Get references to the display and result elements
         const display = document.getElementById('display');
         const result = document.getElementById('result');
 
+        // Append a value to the display and update the result preview
         function appendToDisplay(value) {
             display.value += value;
             updateResult();
         }
 
+        // Clear the display and result fields
         function clearDisplay() {
             display.value = '';
             result.value = '';
             result.classList.remove('show');
         }
 
+        // Calculate the result of the current input
         function calculate() {
             try {
+                // Sanitize input to prevent invalid characters
                 const sanitizedInput = display.value.replace(/[^0-9+\-*/().]/g, '');
                 result.value = math.evaluate(sanitizedInput);
                 result.classList.add('show');
@@ -131,6 +161,7 @@
             }
         }
 
+        // Update the result preview as the user types
         function updateResult() {
             try {
                 result.value = math.evaluate(display.value);
@@ -141,6 +172,7 @@
             }
         }
 
+        // Solve an equation for 'x'
         function solveEquation() {
             try {
                 const input = display.value;
@@ -150,10 +182,12 @@
                     return;
                 }
 
+                // Split the equation into left and right sides
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
                 const solutions = math.simplify(simplified).solveFor('x');
 
+                // Display the solution or indicate no solution
                 result.value = solutions.length ? `x = ${solutions[0]}` : "No solution";
                 result.classList.add('show');
             } catch {
@@ -162,6 +196,7 @@
             }
         }
 
+        // Add keyboard support for the calculator
         document.addEventListener('keydown', (event) => {
             const key = event.key;
             if ((key >= '0' && key <= '9') || ['.', '/', '*', '-', '+', 'x'].includes(key)) {
