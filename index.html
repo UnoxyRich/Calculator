@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" style="animation: flyIn 1s ease-out;"></html>
-<html lang="en">
+<html lang="en" style="animation: flyIn 1s ease-out;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <style>
-        /* Center the calculator on the screen and set a dark theme */
         body {
             display: flex;
             justify-content: center;
@@ -17,7 +15,6 @@
             margin: 0;
             overflow: hidden;
         }
-        /* Style for the calculator container */
         .calculator {
             width: 100%;
             max-width: 400px;
@@ -26,27 +23,22 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
-            position: relative;
         }
-        /* Style for the display and result fields */
         .display, .result {
             width: 100%;
             text-align: right;
             margin-bottom: 10px;
-            padding-right: 10px;
+            padding: 10px;
             border: none;
             background: #666;
             color: white;
             box-sizing: border-box;
-            position: relative;
             transition: all 0.3s ease-in-out;
         }
-        /* Larger font size for the main display */
         .display {
             height: 60px;
             font-size: 2em;
         }
-        /* Result field is initially hidden and animates when shown */
         .result {
             height: 40px;
             font-size: 1.5em;
@@ -54,20 +46,16 @@
             color: #ddd;
             opacity: 0;
             transform: translateX(50%);
-            transition: transform 0.9s ease-in-out, opacity 0.5s ease-in-out;
         }
-        /* Show the result field when it has the 'show' class */
         .result.show {
             opacity: 0.8;
             transform: translateX(0);
         }
-        /* Grid layout for the calculator buttons */
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
-        /* Style for all buttons */
         button {
             width: 100%;
             height: 60px;
@@ -77,34 +65,26 @@
             color: white;
             cursor: pointer;
             border-radius: 5px;
-            box-sizing: border-box;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.2s;
         }
-        /* Change button background color when pressed */
+        button:hover {
+            background: #888;
+        }
         button:active {
             background: #d4d2ff;
+            transform: scale(0.95);
         }
-        /* Special styles for the equal and solve buttons */
         .equal, .solve {
             background: #f90;
-            color: white;
-            transition: transform 0.5s ease-in-out;
-        }
-        /* Add a scaling effect when the equal or solve button is pressed */
-        .equal:active, .solve:active {
-            transform: scale(0.95);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
 </head>
 <body>
     <div class="calculator">
-        <!-- Input field for the equation -->
         <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
-        <!-- Input field for the result, initially hidden -->
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
-            <!-- Buttons for calculator operations -->
             <button onclick="clearDisplay()">C</button>
             <button onclick="appendToDisplay('/')">/</button>
             <button onclick="appendToDisplay('*')">*</button>
@@ -122,8 +102,6 @@
             <button onclick="appendToDisplay('3')">3</button>
             <button onclick="appendToDisplay('0')">0</button>
             <button onclick="appendToDisplay('.')">.</button>
-            <button onclick="appendToDisplay('*')">*</button>
-            <!-- Solve button for equations with variables -->
             <button class="solve" onclick="solveEquation()">Solve</button>
         </div>
     </div>
@@ -131,51 +109,42 @@
         const display = document.getElementById('display');
         const result = document.getElementById('result');
 
-        // Append a value to the display and update the result preview
         function appendToDisplay(value) {
             display.value += value;
             updateResult();
         }
 
-        // Clear the display and result fields
         function clearDisplay() {
             display.value = '';
             result.value = '';
             result.classList.remove('show');
         }
 
-        // Calculate the result of the current equation
         function calculate() {
             try {
-                // Sanitize input to prevent invalid characters
                 const sanitizedInput = display.value.replace(/[^0-9+\-*/().]/g, '');
                 result.value = math.evaluate(sanitizedInput);
                 result.classList.add('show');
-            } catch (error) {
-                // Show an error message if the calculation fails
+            } catch {
                 result.value = 'Error';
                 result.classList.add('show');
             }
         }
 
-        // Update the result preview as the user types
         function updateResult() {
             try {
                 result.value = math.evaluate(display.value);
                 result.classList.remove('show');
-            } catch (error) {
-                // Clear the result preview if the input is invalid
+            } catch {
                 result.value = '';
                 result.classList.remove('show');
             }
         }
 
-        // Solve an equation with a variable (e.g., 'x')
         function solveEquation() {
             try {
                 const input = display.value;
                 if (!input.includes('=')) {
-                    // Show an error if the equation does not contain '='
                     result.value = "No '=' in equation";
                     result.classList.add('show');
                     return;
@@ -183,40 +152,26 @@
 
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
-                const simplifiedEquation = math.simplify(simplified).toString();
-                const solutions = math.evaluate(`roots(${simplifiedEquation}, x)`);
+                const solutions = math.simplify(simplified).solveFor('x');
 
-                // If no solutions are found, display an appropriate message
-                if (!solutions || solutions.length === 0) {
-                    result.value = "No solution";
-                } else {
-                    result.value = `x = ${solutions[0]}`;
-                }
-
+                result.value = solutions.length ? `x = ${solutions[0]}` : "No solution";
                 result.classList.add('show');
-            } catch (error) {
-                // Show an error message if solving fails
+            } catch {
                 result.value = "Error";
                 result.classList.add('show');
             }
         }
 
-        // Add keyboard support for the calculator
-        const calculator = document.querySelector('.calculator');
-        calculator.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', (event) => {
             const key = event.key;
-            // Allow numeric and operator keys
-            if ((key >= '0' && key <= '9') || key === '.' || key === '/' || key === '*' || key === '-' || key === '+' || key === 'x') {
+            if ((key >= '0' && key <= '9') || ['.', '/', '*', '-', '+', 'x'].includes(key)) {
                 appendToDisplay(key);
             } else if (key === 'Enter' || key === '=') {
-                // Calculate on Enter or '=' key
                 calculate();
             } else if (key === 'Backspace') {
-                // Remove the last character on Backspace
                 display.value = display.value.slice(0, -1);
                 updateResult();
             } else if (key === 'Escape') {
-                // Clear the display on Escape
                 clearDisplay();
             }
         });
