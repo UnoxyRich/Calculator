@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="animation: flyIn 1s ease-out;">
+<html lang="en" class="fly-in">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -15,6 +15,11 @@
             color: white;
             margin: 0;
             overflow: hidden;
+        }
+
+        /* Fly-in animation for the HTML element */
+        .fly-in {
+            animation: flyIn 1s ease-out;
         }
 
         /* Calculator container styling */
@@ -53,7 +58,7 @@
             font-size: 1.5em;
             background: #222;
             color: #ddd;
-            opacity: 0;
+            visibility: hidden;
             transform: translateX(50%);
         }
 
@@ -95,7 +100,7 @@
         }
 
         /* Special styling for equal and solve buttons */
-        .equal, .solve {
+    <script src="libs/math.min.js"></script>
             background: #f90;
         }
     </style>
@@ -110,30 +115,39 @@
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
             <!-- Calculator buttons -->
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="appendToDisplay('/')">/</button>
-            <button onclick="appendToDisplay('*')">*</button>
-            <button onclick="appendToDisplay('-')">-</button>
-            <button onclick="appendToDisplay('7')">7</button>
-            <button onclick="appendToDisplay('8')">8</button>
-            <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('+')">+</button>
-            <button onclick="appendToDisplay('4')">4</button>
-            <button onclick="appendToDisplay('5')">5</button>
-            <button onclick="appendToDisplay('6')">6</button>
-            <button class="equal" onclick="calculate()">=</button>
-            <button onclick="appendToDisplay('1')">1</button>
-            <button onclick="appendToDisplay('2')">2</button>
-            <button onclick="appendToDisplay('3')">3</button>
-            <button onclick="appendToDisplay('0')">0</button>
-            <button onclick="appendToDisplay('.')">.</button>
-            <button class="solve" onclick="solveEquation()">Solve</button>
+            <button id="clear">C</button>
+            <button data-value="/">/</button>
+            <button data-value="*">*</button>
+            <button data-value="-">-</button>
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button data-value="+">+</button>
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button id="equal" class="equal">=</button>
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="0">0</button>
+            <button data-value=".">.</button>
+            <button id="solve" class="solve">Solve</button>
         </div>
     </div>
     <script>
         // Get references to the display and result elements
         const display = document.getElementById('display');
         const result = document.getElementById('result');
+
+        // Add event listeners for buttons
+        document.getElementById('clear').addEventListener('click', clearDisplay);
+        document.getElementById('equal').addEventListener('click', calculate);
+        document.getElementById('solve').addEventListener('click', solveEquation);
+
+        document.querySelectorAll('button[data-value]').forEach(button => {
+            button.addEventListener('click', () => appendToDisplay(button.getAttribute('data-value')));
+        });
 
         // Append a value to the display and update the result preview
         function appendToDisplay(value) {
@@ -152,7 +166,7 @@
         function calculate() {
             try {
                 // Sanitize input to prevent invalid characters
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().]/g, '');
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x]/g, '');
                 result.value = math.evaluate(sanitizedInput);
                 result.classList.add('show');
             } catch {
@@ -164,7 +178,8 @@
         // Update the result preview as the user types
         function updateResult() {
             try {
-                result.value = math.evaluate(display.value);
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x]/g, '');
+                result.value = math.evaluate(sanitizedInput);
                 result.classList.remove('show');
             } catch {
                 result.value = '';
@@ -185,8 +200,8 @@
                 // Split the equation into left and right sides
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
-                const solutions = math.simplify(simplified).solveFor('x');
-
+                const solutions = math.solve(simplified, 'x');
+                
                 // Display the solution or indicate no solution
                 result.value = solutions.length ? `x = ${solutions[0]}` : "No solution";
                 result.classList.add('show');
@@ -202,8 +217,10 @@
             if ((key >= '0' && key <= '9') || ['.', '/', '*', '-', '+', 'x'].includes(key)) {
                 appendToDisplay(key);
             } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
                 calculate();
             } else if (key === 'Backspace') {
+                event.preventDefault();
                 display.value = display.value.slice(0, -1);
                 updateResult();
             } else if (key === 'Escape') {
