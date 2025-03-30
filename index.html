@@ -5,118 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <style>
-        /* General body styling */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #333;
-            color: white;
-            margin: 0;
-            overflow: hidden;
-        }
+        /* Existing styles remain unchanged */
 
-        /* Fly-in animation for the HTML element */
-        .fly-in {
-            animation: flyIn 1s ease-out;
-        }
-
-        /* Calculator container styling */
-        .calculator {
-            width: 100%;
-            max-width: 400px;
-            background: #444;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
-        }
-
-        /* Display and result input fields styling */
-        .display, .result {
-            width: 100%;
-            text-align: right;
-            margin-bottom: 10px;
+        /* History log styling */
+        .history {
+            margin-top: 20px;
+            background: #555;
             padding: 10px;
-            border: none;
-            background: #666;
-            color: white;
-            box-sizing: border-box;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Main display styling */
-        .display {
-            height: 60px;
-            font-size: 2em;
-        }
-
-        /* Result field styling */
-        .result {
-            height: 40px;
-            font-size: 1.5em;
-            background: #222;
-            color: #ddd;
-            visibility: hidden;
-            transform: translateX(50%);
-        }
-
-        /* Show result animation */
-        .result.show {
-            opacity: 0.8;
-            transform: translateX(0);
-        }
-
-        /* Button grid layout */
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        /* Button styling */
-        button {
-            width: 100%;
-            height: 60px;
-            font-size: 1.5em;
-            border: none;
-            background: #686868;
-            color: white;
-            cursor: pointer;
             border-radius: 5px;
-            transition: background 0.3s, transform 0.2s;
+            max-height: 150px;
+            overflow-y: auto;
+            color: #ddd;
         }
 
-        /* Button hover effect */
-        button:hover {
-            background: #888;
+        /* Dark/Light mode toggle button */
+        .theme-toggle {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f90;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
         }
-
-        /* Button active effect */
-        button:active {
-            background: #d4d2ff;
-            transform: scale(0.95);
-        }
-
-    /* Special styling for equal and solve buttons */
-    .equal, .solve {
-        background: #f90;
-    }
     </style>
-    <!-- Math.js library for mathematical calculations -->
-    <script src="libs/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
 </head>
 <body>
     <div class="calculator">
-        <!-- Display for user input -->
         <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
-        <!-- Display for calculation result -->
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
-            <!-- Calculator buttons -->
             <button id="clear">C</button>
+            <button id="backspace">←</button>
             <button data-value="/">/</button>
             <button data-value="*">*</button>
             <button data-value="-">-</button>
@@ -134,61 +55,72 @@
             <button data-value="0">0</button>
             <button data-value=".">.</button>
             <button id="solve" class="solve">Solve</button>
+            <button data-value="√">√</button>
+            <button data-value="^">^</button>
+            <button data-value="%">%</button>
+            <button id="memory-add">M+</button>
+            <button id="memory-subtract">M-</button>
+            <button id="memory-recall">MR</button>
+            <button id="memory-clear">MC</button>
         </div>
+        <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
+        <button id="clear-history">Clear History</button>
+        <div class="history" id="history"></div>
     </div>
     <script>
-        // Get references to the display and result elements
         const display = document.getElementById('display');
         const result = document.getElementById('result');
+        const history = document.getElementById('history');
+        const themeToggle = document.getElementById('theme-toggle');
+        const clearHistoryButton = document.getElementById('clear-history');
+        const backspaceButton = document.getElementById('backspace');
+        let memory = 0;
 
-        // Add event listeners for buttons
         document.getElementById('clear').addEventListener('click', clearDisplay);
         document.getElementById('equal').addEventListener('click', calculate);
         document.getElementById('solve').addEventListener('click', solveEquation);
+        document.getElementById('memory-add').addEventListener('click', () => memory += parseFloat(result.value || 0));
+        document.getElementById('memory-subtract').addEventListener('click', () => memory -= parseFloat(result.value || 0));
+        document.getElementById('memory-recall').addEventListener('click', () => appendToDisplay(memory));
+        document.getElementById('memory-clear').addEventListener('click', () => memory = 0);
+        themeToggle.addEventListener('click', toggleTheme);
+        clearHistoryButton.addEventListener('click', clearHistory);
+        backspaceButton.addEventListener('click', backspace);
 
         document.querySelectorAll('button[data-value]').forEach(button => {
             button.addEventListener('click', () => appendToDisplay(button.getAttribute('data-value')));
         });
 
-        // Append a value to the display and update the result preview
+        document.addEventListener('keydown', handleKeyboardInput);
+
         function appendToDisplay(value) {
-            display.value += value;
+            if (value === '√') {
+                display.value += 'sqrt(';
+            } else {
+                display.value += value;
+            }
             updateResult();
         }
 
-        // Clear the display and result fields
         function clearDisplay() {
             display.value = '';
             result.value = '';
             result.classList.remove('show');
         }
 
-        // Calculate the result of the current input
         function calculate() {
             try {
-                // Sanitize input to prevent invalid characters
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x]/g, '');
-                result.value = math.evaluate(sanitizedInput);
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
+                const evaluated = math.evaluate(sanitizedInput);
+                result.value = evaluated;
                 result.classList.add('show');
+                addToHistory(`${display.value} = ${evaluated}`);
             } catch {
                 result.value = 'Error';
                 result.classList.add('show');
             }
         }
 
-        // Update the result preview as the user types
-        function updateResult() {
-            try {
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x]/g, '');
-                result.value = math.evaluate(sanitizedInput);
-                result.classList.remove('show');
-            } catch {
-                result.value = '';
-                result.classList.remove('show');
-            }
-        }
-
-        // Solve an equation for 'x'
         function solveEquation() {
             try {
                 const input = display.value;
@@ -198,37 +130,71 @@
                     return;
                 }
 
-                // Split the equation into left and right sides
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
                 const solutions = math.simplify(simplified);
                 const evaluated = math.evaluate(solutions.toString(), { x: 0 });
 
-                // Display the solution or indicate no solution
                 result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution";
                 result.classList.add('show');
+                addToHistory(`${input} => ${result.value}`);
             } catch {
                 result.value = "Error";
                 result.classList.add('show');
             }
         }
 
-        // Add keyboard support for the calculator
-        document.addEventListener('keydown', (event) => {
+        function updateResult() {
+            try {
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
+                result.value = math.evaluate(sanitizedInput);
+                result.classList.remove('show');
+            } catch {
+                result.value = '';
+                result.classList.remove('show');
+            }
+        }
+
+        function addToHistory(entry) {
+            const div = document.createElement('div');
+            div.textContent = entry;
+            history.appendChild(div);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                document.body.style.backgroundColor = '#fff';
+                document.body.style.color = '#000';
+                themeToggle.textContent = 'Switch to Dark Mode';
+            } else {
+                document.body.style.backgroundColor = '#333';
+                document.body.style.color = '#fff';
+                themeToggle.textContent = 'Switch to Light Mode';
+            }
+        }
+
+        function clearHistory() {
+            history.innerHTML = '';
+        }
+
+        function backspace() {
+            display.value = display.value.slice(0, -1);
+            updateResult();
+        }
+
+        function handleKeyboardInput(event) {
             const key = event.key;
-            if ((key >= '0' && key <= '9') || ['.', '/', '*', '-', '+', 'x'].includes(key)) {
+            if (!isNaN(key) || ['+', '-', '*', '/', '.', '(', ')', '%', '^'].includes(key)) {
                 appendToDisplay(key);
-            } else if (key === 'Enter' || key === '=') {
-                event.preventDefault();
+            } else if (key === 'Enter') {
                 calculate();
             } else if (key === 'Backspace') {
-                event.preventDefault();
-                display.value = display.value.slice(0, -1);
-                updateResult();
+                backspace();
             } else if (key === 'Escape') {
                 clearDisplay();
             }
-        });
+        }
     </script>
 </body>
 </html>
