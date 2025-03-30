@@ -201,10 +201,11 @@
                 // Split the equation into left and right sides
                 const [left, right] = input.split('=');
                 const simplified = `${left} - (${right})`;
-                const solutions = math.solve(simplified, 'x');
-                
+                const solutions = math.simplify(simplified);
+                const evaluated = math.evaluate(solutions.toString(), { x: 0 });
+
                 // Display the solution or indicate no solution
-                result.value = solutions.length ? `x = ${solutions[0]}` : "No solution";
+                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution";
                 result.classList.add('show');
             } catch {
                 result.value = "Error";
