@@ -4,49 +4,51 @@
 <div id="graph-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
 <script>
-    // Function to plot a graph
+    // Function to plot a graph based on the given equation
     function plotGraph(equation) {
         try {
-            const xValues = [];
-            const yValues = [];
+            const xValues = []; // Array to store x values
+            const yValues = []; // Array to store y values
             for (let x = -10; x <= 10; x += 0.1) {
-                xValues.push(x);
-                const y = math.evaluate(equation, { x });
-                yValues.push(y);
+                xValues.push(x); // Populate x values
+                const y = math.evaluate(equation, { x }); // Evaluate y based on the equation
+                yValues.push(y); // Populate y values
             }
 
             const trace = {
-                x: xValues,
-                y: yValues,
-                mode: 'lines',
-                type: 'scatter'
+                x: xValues, // x-axis data
+                y: yValues, // y-axis data
+                mode: 'lines', // Line graph
+                type: 'scatter' // Scatter plot type
             };
 
             const layout = {
-                title: 'Graph',
-                xaxis: { title: 'x' },
-                yaxis: { title: 'y' }
+                title: 'Graph', // Title of the graph
+                xaxis: { title: 'x' }, // Label for x-axis
+                yaxis: { title: 'y' } // Label for y-axis
             };
 
+            // Render the graph using Plotly
             Plotly.newPlot('graph-container', [trace], layout);
         } catch {
-            alert('Invalid equation for graphing.');
+            alert('Invalid equation for graphing.'); // Error handling for invalid equations
         }
     }
 
     // Add a button to graph the equation
     const graphButton = document.createElement('button');
-    graphButton.textContent = 'Graph Equation';
-    graphButton.style.marginTop = '10px';
+    graphButton.textContent = 'Graph Equation'; // Button text
+    graphButton.style.marginTop = '10px'; // Add margin for spacing
     graphButton.addEventListener('click', () => {
-        const equation = display.value;
+        const equation = display.value; // Get the equation from the display
         if (equation) {
-            plotGraph(equation);
+            plotGraph(equation); // Call the plotGraph function
         } else {
-            alert('Please enter an equation to graph.');
+            alert('Please enter an equation to graph.'); // Alert if no equation is entered
         }
     });
 
+    // Append the graph button to the calculator
     document.querySelector('.calculator').appendChild(graphButton);
 </script>
 <!-- 1. Added a button to copy the result to clipboard -->
@@ -58,34 +60,34 @@
 <script>
     const copyResultButton = document.getElementById('copy-result');
     const toggleAngleModeButton = document.getElementById('toggle-angle-mode');
-    let isRadians = true;
+    let isRadians = true; // Default angle mode is radians
 
     // Copy result to clipboard
     copyResultButton.addEventListener('click', () => {
         if (result.value) {
             navigator.clipboard.writeText(result.value).then(() => {
-                alert('Result copied to clipboard!');
+                alert('Result copied to clipboard!'); // Success message
             }).catch(() => {
-                alert('Failed to copy result.');
+                alert('Failed to copy result.'); // Error message
             });
         } else {
-            alert('No result to copy.');
+            alert('No result to copy.'); // Alert if no result is available
         }
     });
 
     // Toggle between radians and degrees
     toggleAngleModeButton.addEventListener('click', () => {
-        isRadians = !isRadians;
-        toggleAngleModeButton.textContent = isRadians ? 'Switch to Degrees' : 'Switch to Radians';
+        isRadians = !isRadians; // Toggle the angle mode
+        toggleAngleModeButton.textContent = isRadians ? 'Switch to Degrees' : 'Switch to Radians'; // Update button text
     });
 
     // Update trigonometric functions to respect angle mode
     document.querySelectorAll('button[data-value]').forEach(button => {
         button.addEventListener('click', () => {
-            const value = button.getAttribute('data-value');
+            const value = button.getAttribute('data-value'); // Get the button's value
             if (['sin(', 'cos(', 'tan('].includes(value)) {
-                const angleMode = isRadians ? '' : ' * (pi / 180)';
-                display.value += value.replace('(', `(x${angleMode})`);
+                const angleMode = isRadians ? '' : ' * (pi / 180)'; // Convert to degrees if necessary
+                display.value += value.replace('(', `(x${angleMode})`); // Append the adjusted function to the display
             }
         });
     });
@@ -158,6 +160,7 @@
         <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
         <input type="text" class="result" id="result" disabled>
         <div class="buttons">
+            <!-- Calculator buttons for basic operations -->
             <button id="clear">C</button>
             <button id="backspace">←</button>
             <button data-value="/">/</button>
@@ -185,9 +188,11 @@
             <button id="memory-recall">MR</button>
             <button id="memory-clear">MC</button>
         </div>
+        <!-- Toggle buttons for theme and scientific mode -->
         <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
         <button class="scientific-toggle" id="scientific-toggle">Toggle Scientific Mode</button>
         <button id="clear-history">Clear History</button>
+        <!-- Scientific mode buttons -->
         <div class="scientific-buttons" id="scientific-buttons" style="display: none;">
             <button data-value="sin(">sin</button>
             <button data-value="cos(">cos</button>
@@ -197,19 +202,21 @@
             <button data-value="pi">π</button>
             <button data-value="e">e</button>
         </div>
+        <!-- History log for calculations -->
         <div class="history" id="history"></div>
     </div>
     <script>
-        const display = document.getElementById('display');
-        const result = document.getElementById('result');
-        const history = document.getElementById('history');
-        const themeToggle = document.getElementById('theme-toggle');
-        const scientificToggle = document.getElementById('scientific-toggle');
-        const scientificButtons = document.getElementById('scientific-buttons');
-        const clearHistoryButton = document.getElementById('clear-history');
-        const backspaceButton = document.getElementById('backspace');
-        let memory = 0;
+        const display = document.getElementById('display'); // Input field for the equation
+        const result = document.getElementById('result'); // Input field for the result
+        const history = document.getElementById('history'); // History log container
+        const themeToggle = document.getElementById('theme-toggle'); // Theme toggle button
+        const scientificToggle = document.getElementById('scientific-toggle'); // Scientific mode toggle button
+        const scientificButtons = document.getElementById('scientific-buttons'); // Scientific buttons container
+        const clearHistoryButton = document.getElementById('clear-history'); // Clear history button
+        const backspaceButton = document.getElementById('backspace'); // Backspace button
+        let memory = 0; // Memory storage for calculator
 
+        // Event listeners for calculator functionality
         document.getElementById('clear').addEventListener('click', clearDisplay);
         document.getElementById('equal').addEventListener('click', calculate);
         document.getElementById('solve').addEventListener('click', solveEquation);
@@ -222,127 +229,139 @@
         clearHistoryButton.addEventListener('click', clearHistory);
         backspaceButton.addEventListener('click', backspace);
 
+        // Add event listeners to all buttons with data-value attributes
         document.querySelectorAll('button[data-value]').forEach(button => {
             button.addEventListener('click', () => appendToDisplay(button.getAttribute('data-value')));
         });
 
+        // Handle keyboard input for calculator
         document.addEventListener('keydown', handleKeyboardInput);
 
+        // Append value to the display
         function appendToDisplay(value) {
             if (value === '√') {
-                display.value += 'sqrt(';
+                display.value += 'sqrt('; // Replace √ with sqrt function
             } else if (value === 'pi') {
-                display.value += Math.PI;
+                display.value += Math.PI; // Replace π with its value
             } else if (value === 'e') {
-                display.value += Math.E;
+                display.value += Math.E; // Replace e with its value
             } else {
-                display.value += value;
+                display.value += value; // Append the value as is
             }
-            updateResult();
+            updateResult(); // Update the result field
         }
 
+        // Clear the display and result fields
         function clearDisplay() {
             display.value = '';
             result.value = '';
-            result.classList.remove('show');
+            result.classList.remove('show'); // Remove the result visibility class
         }
 
+        // Calculate the result of the equation
         function calculate() {
             try {
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
-                const evaluated = math.evaluate(sanitizedInput);
-                result.value = evaluated;
-                result.classList.add('show');
-                addToHistory(`${display.value} = ${evaluated}`);
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, ''); // Sanitize input
+                const evaluated = math.evaluate(sanitizedInput); // Evaluate the equation
+                result.value = evaluated; // Display the result
+                result.classList.add('show'); // Show the result field
+                addToHistory(`${display.value} = ${evaluated}`); // Add the calculation to history
             } catch {
-                result.value = 'Error';
+                result.value = 'Error'; // Display error if evaluation fails
                 result.classList.add('show');
             }
         }
 
+        // Solve an equation with an '=' sign
         function solveEquation() {
             try {
                 const input = display.value;
                 if (!input.includes('=')) {
-                    result.value = "No '=' in equation";
+                    result.value = "No '=' in equation"; // Alert if no '=' is present
                     result.classList.add('show');
                     return;
                 }
 
                 const [left, right] = input.split('=');
-                const simplified = `${left} - (${right})`;
+                const simplified = `${left} - (${right})`; // Simplify the equation
                 const solutions = math.simplify(simplified);
-                const evaluated = math.evaluate(solutions.toString(), { x: 0 });
+                const evaluated = math.evaluate(solutions.toString(), { x: 0 }); // Solve for x
 
-                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution";
+                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution"; // Display solution
                 result.classList.add('show');
-                addToHistory(`${input} => ${result.value}`);
+                addToHistory(`${input} => ${result.value}`); // Add to history
             } catch {
-                result.value = "Error";
+                result.value = "Error"; // Display error if solving fails
                 result.classList.add('show');
             }
         }
 
+        // Update the result field dynamically as the user types
         function updateResult() {
             try {
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
-                result.value = math.evaluate(sanitizedInput);
-                result.classList.remove('show');
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, ''); // Sanitize input
+                result.value = math.evaluate(sanitizedInput); // Evaluate the equation
+                result.classList.remove('show'); // Hide the result field
             } catch {
-                result.value = '';
+                result.value = ''; // Clear the result field if evaluation fails
                 result.classList.remove('show');
             }
         }
 
+        // Add an entry to the history log
         function addToHistory(entry) {
             const div = document.createElement('div');
-            div.textContent = entry;
-            history.appendChild(div);
+            div.textContent = entry; // Set the text content of the history entry
+            history.appendChild(div); // Append the entry to the history container
         }
 
+        // Toggle between light and dark themes
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
+            document.body.classList.toggle('light-mode'); // Toggle the light-mode class
             if (document.body.classList.contains('light-mode')) {
-                document.body.style.backgroundColor = '#fff';
-                document.body.style.color = '#000';
-                themeToggle.textContent = 'Switch to Dark Mode';
+                document.body.style.backgroundColor = '#fff'; // Set light mode background
+                document.body.style.color = '#000'; // Set light mode text color
+                themeToggle.textContent = 'Switch to Dark Mode'; // Update button text
             } else {
-                document.body.style.backgroundColor = '#333';
-                document.body.style.color = '#fff';
-                themeToggle.textContent = 'Switch to Light Mode';
+                document.body.style.backgroundColor = '#333'; // Set dark mode background
+                document.body.style.color = '#fff'; // Set dark mode text color
+                themeToggle.textContent = 'Switch to Light Mode'; // Update button text
             }
         }
 
+        // Toggle the visibility of scientific buttons
         function toggleScientificMode() {
             if (scientificButtons.style.display === 'none') {
-                scientificButtons.style.display = 'block';
+                scientificButtons.style.display = 'block'; // Show scientific buttons
             } else {
-                scientificButtons.style.display = 'none';
+                scientificButtons.style.display = 'none'; // Hide scientific buttons
             }
         }
 
+        // Clear the history log
         function clearHistory() {
-            history.innerHTML = '';
+            history.innerHTML = ''; // Clear the history container
         }
 
+        // Remove the last character from the display
         function backspace() {
-            display.value = display.value.slice(0, -1);
-            updateResult();
+            display.value = display.value.slice(0, -1); // Remove the last character
+            updateResult(); // Update the result field
         }
 
+        // Handle keyboard input for calculator functionality
         function handleKeyboardInput(event) {
             const key = event.key;
             if (!isNaN(key) || ['+', '-', '*', '/', '.', '(', ')', '%', '^'].includes(key)) {
-                appendToDisplay(key);
+                appendToDisplay(key); // Append valid keys to the display
             } else if (key === 'Enter') {
-                calculate();
+                calculate(); // Calculate on Enter key press
             } else if (key === 'Backspace') {
-                backspace();
+                backspace(); // Backspace on Backspace key press
             } else if (key === 'Escape') {
-                clearDisplay();
+                clearDisplay(); // Clear display on Escape key press
             }
         }
     </script>
 </body>
 </html>
-<!-- Removed duplicate HTML, HEAD, BODY, and SCRIPT sections -->
