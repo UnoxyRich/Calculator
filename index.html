@@ -29,6 +29,258 @@
             cursor: pointer;
             font-size: 1em;
         }
+
+        /* Scientific mode toggle button */
+        .scientific-toggle {
+            margin-top: 10px;
+            padding: 10px;
+            background: #09f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        /* Scientific buttons styling */
+        .scientific-buttons {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .scientific-buttons button {
+            margin: 5px;
+            padding: 10px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
+        <input type="text" class="result" id="result" disabled>
+        <div class="buttons">
+            <button id="clear">C</button>
+            <button id="backspace">←</button>
+            <button data-value="/">/</button>
+            <button data-value="*">*</button>
+            <button data-value="-">-</button>
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button data-value="+">+</button>
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button id="equal" class="equal">=</button>
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="0">0</button>
+            <button data-value=".">.</button>
+            <button id="solve" class="solve">Solve</button>
+            <button data-value="√">√</button>
+            <button data-value="^">^</button>
+            <button data-value="%">%</button>
+            <button id="memory-add">M+</button>
+            <button id="memory-subtract">M-</button>
+            <button id="memory-recall">MR</button>
+            <button id="memory-clear">MC</button>
+        </div>
+        <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
+        <button class="scientific-toggle" id="scientific-toggle">Toggle Scientific Mode</button>
+        <button id="clear-history">Clear History</button>
+        <div class="scientific-buttons" id="scientific-buttons">
+            <button data-value="sin(">sin</button>
+            <button data-value="cos(">cos</button>
+            <button data-value="tan(">tan</button>
+            <button data-value="log(">log</button>
+            <button data-value="ln(">ln</button>
+            <button data-value="pi">π</button>
+            <button data-value="e">e</button>
+        </div>
+        <div class="history" id="history"></div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        const result = document.getElementById('result');
+        const history = document.getElementById('history');
+        const themeToggle = document.getElementById('theme-toggle');
+        const scientificToggle = document.getElementById('scientific-toggle');
+        const scientificButtons = document.getElementById('scientific-buttons');
+        const clearHistoryButton = document.getElementById('clear-history');
+        const backspaceButton = document.getElementById('backspace');
+        let memory = 0;
+
+        document.getElementById('clear').addEventListener('click', clearDisplay);
+        document.getElementById('equal').addEventListener('click', calculate);
+        document.getElementById('solve').addEventListener('click', solveEquation);
+        document.getElementById('memory-add').addEventListener('click', () => memory += parseFloat(result.value || 0));
+        document.getElementById('memory-subtract').addEventListener('click', () => memory -= parseFloat(result.value || 0));
+        document.getElementById('memory-recall').addEventListener('click', () => appendToDisplay(memory));
+        document.getElementById('memory-clear').addEventListener('click', () => memory = 0);
+        themeToggle.addEventListener('click', toggleTheme);
+        scientificToggle.addEventListener('click', toggleScientificMode);
+        clearHistoryButton.addEventListener('click', clearHistory);
+        backspaceButton.addEventListener('click', backspace);
+
+        document.querySelectorAll('button[data-value]').forEach(button => {
+            button.addEventListener('click', () => appendToDisplay(button.getAttribute('data-value')));
+        });
+
+        document.addEventListener('keydown', handleKeyboardInput);
+
+        function appendToDisplay(value) {
+            if (value === '√') {
+                display.value += 'sqrt(';
+            } else if (value === 'pi') {
+                display.value += Math.PI;
+            } else if (value === 'e') {
+                display.value += Math.E;
+            } else {
+                display.value += value;
+            }
+            updateResult();
+        }
+
+        function clearDisplay() {
+            display.value = '';
+            result.value = '';
+            result.classList.remove('show');
+        }
+
+        function calculate() {
+            try {
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
+                const evaluated = math.evaluate(sanitizedInput);
+                result.value = evaluated;
+                result.classList.add('show');
+                addToHistory(`${display.value} = ${evaluated}`);
+            } catch {
+                result.value = 'Error';
+                result.classList.add('show');
+            }
+        }
+
+        function solveEquation() {
+            try {
+                const input = display.value;
+                if (!input.includes('=')) {
+                    result.value = "No '=' in equation";
+                    result.classList.add('show');
+                    return;
+                }
+
+                const [left, right] = input.split('=');
+                const simplified = `${left} - (${right})`;
+                const solutions = math.simplify(simplified);
+                const evaluated = math.evaluate(solutions.toString(), { x: 0 });
+
+                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution";
+                result.classList.add('show');
+                addToHistory(`${input} => ${result.value}`);
+            } catch {
+                result.value = "Error";
+                result.classList.add('show');
+            }
+        }
+
+        function updateResult() {
+            try {
+                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
+                result.value = math.evaluate(sanitizedInput);
+                result.classList.remove('show');
+            } catch {
+                result.value = '';
+                result.classList.remove('show');
+            }
+        }
+
+        function addToHistory(entry) {
+            const div = document.createElement('div');
+            div.textContent = entry;
+            history.appendChild(div);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                document.body.style.backgroundColor = '#fff';
+                document.body.style.color = '#000';
+                themeToggle.textContent = 'Switch to Dark Mode';
+            } else {
+                document.body.style.backgroundColor = '#333';
+                document.body.style.color = '#fff';
+                themeToggle.textContent = 'Switch to Light Mode';
+            }
+        }
+
+        function toggleScientificMode() {
+            if (scientificButtons.style.display === 'none') {
+                scientificButtons.style.display = 'block';
+            } else {
+                scientificButtons.style.display = 'none';
+            }
+        }
+
+        function clearHistory() {
+            history.innerHTML = '';
+        }
+
+        function backspace() {
+            display.value = display.value.slice(0, -1);
+            updateResult();
+        }
+
+        function handleKeyboardInput(event) {
+            const key = event.key;
+            if (!isNaN(key) || ['+', '-', '*', '/', '.', '(', ')', '%', '^'].includes(key)) {
+                appendToDisplay(key);
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                backspace();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        }
+    </script>
+</body>
+</html>
+<html lang="en" class="fly-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Calculator</title>
+    <style>
+        /* Existing styles remain unchanged */
+
+        /* History log styling */
+        .history {
+            margin-top: 20px;
+            background: #555;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            color: #ddd;
+        }
+
+        /* Dark/Light mode toggle button */
+        .theme-toggle {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f90;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
