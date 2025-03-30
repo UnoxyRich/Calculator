@@ -1,4 +1,97 @@
 <!DOCTYPE html>
+<!-- Added new features: -->
+<!-- 3. Added a graphing feature -->
+<div id="graph-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
+<script>
+    // Function to plot a graph
+    function plotGraph(equation) {
+        try {
+            const xValues = [];
+            const yValues = [];
+            for (let x = -10; x <= 10; x += 0.1) {
+                xValues.push(x);
+                const y = math.evaluate(equation, { x });
+                yValues.push(y);
+            }
+
+            const trace = {
+                x: xValues,
+                y: yValues,
+                mode: 'lines',
+                type: 'scatter'
+            };
+
+            const layout = {
+                title: 'Graph',
+                xaxis: { title: 'x' },
+                yaxis: { title: 'y' }
+            };
+
+            Plotly.newPlot('graph-container', [trace], layout);
+        } catch {
+            alert('Invalid equation for graphing.');
+        }
+    }
+
+    // Add a button to graph the equation
+    const graphButton = document.createElement('button');
+    graphButton.textContent = 'Graph Equation';
+    graphButton.style.marginTop = '10px';
+    graphButton.addEventListener('click', () => {
+        const equation = display.value;
+        if (equation) {
+            plotGraph(equation);
+        } else {
+            alert('Please enter an equation to graph.');
+        }
+    });
+
+    document.querySelector('.calculator').appendChild(graphButton);
+</script>
+<!-- 1. Added a button to copy the result to clipboard -->
+<button id="copy-result">Copy Result</button>
+
+<!-- 2. Added a button to toggle between radians and degrees for trigonometric functions -->
+<button id="toggle-angle-mode">Toggle Radians/Degrees</button>
+
+<script>
+    const copyResultButton = document.getElementById('copy-result');
+    const toggleAngleModeButton = document.getElementById('toggle-angle-mode');
+    let isRadians = true;
+
+    // Copy result to clipboard
+    copyResultButton.addEventListener('click', () => {
+        if (result.value) {
+            navigator.clipboard.writeText(result.value).then(() => {
+                alert('Result copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy result.');
+            });
+        } else {
+            alert('No result to copy.');
+        }
+    });
+
+    // Toggle between radians and degrees
+    toggleAngleModeButton.addEventListener('click', () => {
+        isRadians = !isRadians;
+        toggleAngleModeButton.textContent = isRadians ? 'Switch to Degrees' : 'Switch to Radians';
+    });
+
+    // Update trigonometric functions to respect angle mode
+    document.querySelectorAll('button[data-value]').forEach(button => {
+        button.addEventListener('click', () => {
+            const value = button.getAttribute('data-value');
+            if (['sin(', 'cos(', 'tan('].includes(value)) {
+                const angleMode = isRadians ? '' : ' * (pi / 180)';
+                display.value += value.replace('(', `(x${angleMode})`);
+            }
+        });
+    });
+</script>
+<!-- 1. Added a button to copy the result to clipboard -->
+<!-- 2. Added a button to toggle between radians and degrees for trigonometric functions -->
 <html lang="en" class="fly-in">
 <head>
     <meta charset="UTF-8">
