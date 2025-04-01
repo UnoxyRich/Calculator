@@ -1,4 +1,121 @@
 <!DOCTYPE html>
+<html lang="en" class="fly-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script>
+        // Math.js is already globally available, no need to redeclare
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background: #1e272e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            width: 400px;
+        }
+
+        .display, .result {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.5em;
+            background: #ecf0f1;
+            color: #2c3e50;
+            text-align: right;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #1abc9c;
+            color: white;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #16a085;
+            transform: scale(1.05);
+        }
+
+        .theme-toggle, .scientific-toggle, #clear-history {
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #e67e22;
+            color: white;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .theme-toggle:hover, .scientific-toggle:hover, #clear-history:hover {
+            background: #d35400;
+            transform: scale(1.05);
+        }
+
+        .scientific-buttons {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .scientific-buttons button {
+            background: #9b59b6;
+        }
+
+        .scientific-buttons button:hover {
+            background: #8e44ad;
+        }
+
+        .history {
+            margin-top: 20px;
+            background: #2c3e50;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            color: #bdc3c7;
+            font-size: 1em;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #graph-container {
+            margin-top: 20px;
+            background: #34495e;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<!-- Removed duplicate <html> and <head> tags -->
 <!-- Added new features: -->
 <!-- 3. Added a graphing feature -->
 <div id="graph-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
@@ -100,6 +217,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script>
+        const math = math; // Ensure Math.js is properly referenced
+    </script>
     <style>
         /* Existing styles remain unchanged */
 
