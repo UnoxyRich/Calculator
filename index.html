@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" class="fly-in">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Calculator</title>
+    <title>Graphing Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,409 +18,76 @@
             align-items: center;
             height: 100vh;
         }
-        +97
--78
-Original file line number	Diff line number	Diff line change
-@@ -4,49 +4,51 @@
-<div id="graph-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
-<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
-<script>
-    // Function to plot a graph based on the given equation
-    function plotGraph(equation) {
-        try {
-            const xValues = []; // Array to store x values
-            const yValues = []; // Array to store y values
-            for (let x = -10; x <= 10; x += 0.1) {
-                xValues.push(x);
-                const y = math.evaluate(equation, { x });
-                yValues.push(y);
-                xValues.push(x); // Populate x values
-                const y = math.evaluate(equation, { x }); // Evaluate y based on the equation
-                yValues.push(y); // Populate y values
-            }
 
-            const trace = {
-                x: xValues,
-                y: yValues,
-                mode: 'lines',
-                type: 'scatter'
-                x: xValues, // x-axis data
-                y: yValues, // y-axis data
-                mode: 'lines', // Line graph
-                type: 'scatter' // Scatter plot type
-            };
-
-            const layout = {
-                title: 'Graph',
-                xaxis: { title: 'x' },
-                yaxis: { title: 'y' }
-                title: 'Graph', // Title of the graph
-                xaxis: { title: 'x' }, // Label for x-axis
-                yaxis: { title: 'y' } // Label for y-axis
-            };
-
-            // Render the graph using Plotly
-            Plotly.newPlot('graph-container', [trace], layout);
-        } catch {
-            alert('Invalid equation for graphing.');
-            alert('Invalid equation for graphing.'); // Error handling for invalid equations
-        }
-            alert('Invalid equation for graphing.'); // Error handling for invalid equations
-    // Add a button to graph the equation
-    const graphButton = document.createElement('button');
-    graphButton.textContent = 'Graph Equation';
-    graphButton.style.marginTop = '10px';
-    graphButton.textContent = 'Graph Equation'; // Button text
-    graphButton.style.marginTop = '10px'; // Add margin for spacing
-    graphButton.addEventListener('click', () => {
-        const equation = display.value;
-        const equation = display.value; // Get the equation from the display
-        if (equation) {
-            plotGraph(equation);
-            plotGraph(equation); // Call the plotGraph function
-        } else {
-            alert('Please enter an equation to graph.');
-            alert('Please enter an equation to graph.'); // Alert if no equation is entered
-        }
-    });
-
-    // Append the graph button to the calculator
-    document.querySelector('.calculator').appendChild(graphButton);
-</script>
-<!-- 1. Added a button to copy the result to clipboard -->
-@@ -58,34 +60,34 @@
-<script>
-    const copyResultButton = document.getElementById('copy-result');
-    const toggleAngleModeButton = document.getElementById('toggle-angle-mode');
-    let isRadians = true;
-    let isRadians = true; // Default angle mode is radians
-
-    // Copy result to clipboard
-    copyResultButton.addEventListener('click', () => {
-        if (result.value) {
-            navigator.clipboard.writeText(result.value).then(() => {
-                alert('Result copied to clipboard!');
-                alert('Result copied to clipboard!'); // Success message
-            }).catch(() => {
-                alert('Failed to copy result.');
-                alert('Failed to copy result.'); // Error message
-            });
-        } else {
-            alert('No result to copy.');
-            alert('No result to copy.'); // Alert if no result is available
-        }
-    });
-
-    // Toggle between radians and degrees
-    toggleAngleModeButton.addEventListener('click', () => {
-        isRadians = !isRadians;
-        toggleAngleModeButton.textContent = isRadians ? 'Switch to Degrees' : 'Switch to Radians';
-        isRadians = !isRadians; // Toggle the angle mode
-        toggleAngleModeButton.textContent = isRadians ? 'Switch to Degrees' : 'Switch to Radians'; // Update button text
-    });
-
-    // Update trigonometric functions to respect angle mode
-    document.querySelectorAll('button[data-value]').forEach(button => {
-        button.addEventListener('click', () => {
-            const value = button.getAttribute('data-value');
-            const value = button.getAttribute('data-value'); // Get the button's value
-            if (['sin(', 'cos(', 'tan('].includes(value)) {
-                const angleMode = isRadians ? '' : ' * (pi / 180)';
-                display.value += value.replace('(', `(x${angleMode})`);
-                const angleMode = isRadians ? '' : ' * (pi / 180)'; // Convert to degrees if necessary
-                display.value += value.replace('(', `(x${angleMode})`); // Append the adjusted function to the display
-            }
-        });
-    });
-@@ -158,6 +160,7 @@
-        <input type="text" class="display" id="display" placeholder="Enter equation using 'x'" disabled>
-        <input type="text" class="result" id="result" disabled>
-        <div class="buttons">
-            <!-- Calculator buttons for basic operations -->
-            <button id="clear">C</button>
-            <button id="backspace">←</button>
-            <button data-value="/">/</button>
-@@ -185,9 +188,11 @@
-            <button id="memory-recall">MR</button>
-            <button id="memory-clear">MC</button>
-        </div>
-        <!-- Toggle buttons for theme and scientific mode -->
-        <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
-        <button class="scientific-toggle" id="scientific-toggle">Toggle Scientific Mode</button>
-        <button id="clear-history">Clear History</button>
-        <!-- Scientific mode buttons -->
-        <div class="scientific-buttons" id="scientific-buttons" style="display: none;">
-            <button data-value="sin(">sin</button>
-            <button data-value="cos(">cos</button>
-@@ -197,19 +202,21 @@
-            <button data-value="pi">π</button>
-            <button data-value="e">e</button>
-        </div>
-        <!-- History log for calculations -->
-        <div class="history" id="history"></div>
-    </div>
-    <script>
-        const display = document.getElementById('display');
-        const result = document.getElementById('result');
-        const history = document.getElementById('history');
-        const themeToggle = document.getElementById('theme-toggle');
-        const display = document.getElementById('display'); // Input field for the equation
-        const result = document.getElementById('result'); // Input field for the result
-        const history = document.getElementById('history'); // History log container
-        const themeToggle = document.getElementById('theme-toggle'); // Theme toggle button
-        const scientificToggle = document.getElementById('scientific-toggle'); // Scientific mode toggle button
-        const scientificButtons = document.getElementById('scientific-buttons'); // Scientific buttons container
-        const clearHistoryButton = document.getElementById('clear-history'); // Clear history button
-        const backspaceButton = document.getElementById('backspace'); // Backspace button
-        let memory = 0; // Memory storage for calculator
-        document.getElementById('solve').addEventListener('click', solveEquation);
-@@ -222,127 +229,139 @@
-        clearHistoryButton.addEventListener('click', clearHistory);
-        backspaceButton.addEventListener('click', backspace);
-
-        // Add event listeners to all buttons with data-value attributes
-        document.querySelectorAll('button[data-value]').forEach(button => {
-            button.addEventListener('click', () => appendToDisplay(button.getAttribute('data-value')));
-        });
-
-        // Handle keyboard input for calculator
-        document.addEventListener('keydown', handleKeyboardInput);
-
-        // Append value to the display
-        function appendToDisplay(value) {
-            if (value === '√') {
-                display.value += 'sqrt(';
-                display.value += 'sqrt('; // Replace √ with sqrt function
-            } else if (value === 'pi') {
-                display.value += Math.PI;
-                display.value += Math.PI; // Replace π with its value
-            } else if (value === 'e') {
-                display.value += Math.E;
-                display.value += Math.E; // Replace e with its value
-            } else {
-                display.value += value;
-                display.value += value; // Append the value as is
-            }
-            updateResult();
-            updateResult(); // Update the result field
-        }
-
-        // Clear the display and result fields
-        function clearDisplay() {
-            display.value = '';
-            result.value = '';
-            result.classList.remove('show');
-            result.classList.remove('show'); // Remove the result visibility class
-        }
-
-        // Calculate the result of the equation
-        function calculate() {
-            try {
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
-                const evaluated = math.evaluate(sanitizedInput);
-                result.value = evaluated;
-                result.classList.add('show');
-                addToHistory(`${display.value} = ${evaluated}`);
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, ''); // Sanitize input
-                const evaluated = math.evaluate(sanitizedInput); // Evaluate the equation
-                result.value = evaluated; // Display the result
-                result.classList.add('show'); // Show the result field
-                addToHistory(`${display.value} = ${evaluated}`); // Add the calculation to history
-            } catch {
-                result.value = 'Error';
-                result.value = 'Error'; // Display error if evaluation fails
-                result.classList.add('show');
-            }
-        }
-
-        // Solve an equation with an '=' sign
-        function solveEquation() {
-            try {
-                const input = display.value;
-                if (!input.includes('=')) {
-                    result.value = "No '=' in equation";
-                    result.value = "No '=' in equation"; // Alert if no '=' is present
-                result.value = 'Error'; // Display error if evaluation fails
-                }
-
-                const [left, right] = input.split('=');
-                const simplified = `${left} - (${right})`;
-                const simplified = `${left} - (${right})`; // Simplify the equation
-                const solutions = math.simplify(simplified);
-                const evaluated = math.evaluate(solutions.toString(), { x: 0 });
-                const evaluated = math.evaluate(solutions.toString(), { x: 0 }); // Solve for x
-
-                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution";
-                result.value = evaluated !== undefined ? `x = ${evaluated}` : "No solution"; // Display solution
-                result.classList.add('show');
-                addToHistory(`${input} => ${result.value}`);
-                addToHistory(`${input} => ${result.value}`); // Add to history
-            } catch {
-                result.value = "Error";
-                result.value = "Error"; // Display error if solving fails
-                result.classList.add('show');
-            }
-        }
-
-        // Update the result field dynamically as the user types
-        function updateResult() {
-            try {
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, '');
-                result.value = math.evaluate(sanitizedInput);
-                result.classList.remove('show');
-                const sanitizedInput = display.value.replace(/[^0-9+\-*/().x^sqrt%]/g, ''); // Sanitize input
-                result.value = math.evaluate(sanitizedInput); // Evaluate the equation
-                result.classList.remove('show'); // Hide the result field
-            } catch {
-                result.value = '';
-                result.value = ''; // Clear the result field if evaluation fails
-                result.classList.remove('show');
-            }
-        }
-
-        // Add an entry to the history log
-        function addToHistory(entry) {
-            const div = document.createElement('div');
-            div.textContent = entry;
-            history.appendChild(div);
-            div.textContent = entry; // Set the text content of the history entry
-            history.appendChild(div); // Append the entry to the history container
-        }
-
-        // Toggle between light and dark themes
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            document.body.classList.toggle('light-mode'); // Toggle the light-mode class
-            if (document.body.classList.contains('light-mode')) {
-                document.body.style.backgroundColor = '#fff';
-                document.body.style.color = '#000';
-                themeToggle.textContent = 'Switch to Dark Mode';
-                document.body.style.backgroundColor = '#fff'; // Set light mode background
-                document.body.style.color = '#000'; // Set light mode text color
-                themeToggle.textContent = 'Switch to Dark Mode'; // Update button text
-            } else {
-                document.body.style.backgroundColor = '#333';
-                document.body.style.color = '#fff';
-                themeToggle.textContent = 'Switch to Light Mode';
-                document.body.style.backgroundColor = '#333'; // Set dark mode background
-                document.body.style.color = '#fff'; // Set dark mode text color
-                themeToggle.textContent = 'Switch to Light Mode'; // Update button text
-            }
-        }
-
-        // Toggle the visibility of scientific buttons
-        function toggleScientificMode() {
-            if (scientificButtons.style.display === 'none') {
-                scientificButtons.style.display = 'block';
-                scientificButtons.style.display = 'block'; // Show scientific buttons
-            } else {
-                scientificButtons.style.display = 'none';
-                scientificButtons.style.display = 'none'; // Hide scientific buttons
-            }
-        }
-
-        // Clear the history log
-        function clearHistory() {
-            history.innerHTML = '';
-            history.innerHTML = ''; // Clear the history container
-        }
-
-        // Remove the last character from the display
-        function backspace() {
-            display.value = display.value.slice(0, -1);
-            updateResult();
-            display.value = display.value.slice(0, -1); // Remove the last character
-            updateResult(); // Update the result field
-        }
-
-        // Handle keyboard input for calculator functionality
-        function handleKeyboardInput(event) {
-            const key = event.key;
-            if (!isNaN(key) || ['+', '-', '*', '/', '.', '(', ')', '%', '^'].includes(key)) {
-                appendToDisplay(key);
-                appendToDisplay(key); // Append valid keys to the display
-            } else if (key === 'Enter') {
-                calculate();
-                calculate(); // Calculate on Enter key press
-            } else if (key === 'Backspace') {
-                backspace();
-                backspace(); // Backspace on Backspace key press
-            } else if (key === 'Escape') {
-                clearDisplay();
-                clearDisplay(); // Clear display on Escape key press
-            }
-        }
-    </script>
-</body>
-</html>
-<!-- Removed duplicate HTML, HEAD, BODY, and SCRIPT sections -->
         .calculator {
-            background: #2c3e50;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(44, 62, 80, 0.95);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
         }
 
         .display, .result {
             width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 18px;
+            margin-bottom: 20px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.5em;
-            background: #ecf0f1;
+            background: #f0f0f0;
             color: #2c3e50;
             text-align: right;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 12px;
         }
 
         button {
-            padding: 20px;
+            padding: 18px;
             font-size: 1.2em;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            background: #1abc9c;
+            background: #3498db;
             color: white;
-            transition: background 0.3s, transform 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
         }
 
         button:hover {
-            background: #16a085;
-            transform: scale(1.05);
+            background: #2980b9;
+            transform: translateY(-2px);
         }
 
-        .theme-toggle, .scientific-toggle, #clear-history, #copy-result, #toggle-angle-mode {
+        .theme-toggle, .scientific-toggle, #clear-history, #copy-result, #toggle-angle-mode, #graph-button {
             width: 100%;
             margin-top: 15px;
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 16px;
+            font-size: 1.1em;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            background: #e67e22;
+            background: #f39c12;
             color: white;
-            transition: background 0.3s, transform 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
         }
 
-        .theme-toggle:hover, .scientific-toggle:hover, #clear-history:hover, #copy-result:hover, #toggle-angle-mode:hover {
-            background: #d35400;
-            transform: scale(1.05);
+        .theme-toggle:hover, .scientific-toggle:hover, #clear-history:hover, #copy-result:hover, #toggle-angle-mode:hover, #graph-button:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
         }
 
         .scientific-buttons {
             display: none;
             margin-top: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
         .scientific-buttons button {
@@ -433,22 +100,23 @@ Original file line number	Diff line number	Diff line change
 
         .history {
             margin-top: 20px;
-            background: #34495e;
+            background: rgba(52, 73, 94, 0.8);
             padding: 15px;
             border-radius: 10px;
             max-height: 150px;
             overflow-y: auto;
-            color: #bdc3c7;
-            font-size: 1em;
+            color: #ecf0f1;
+            font-size: 0.95em;
             box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         #graph-container {
             margin-top: 20px;
-            background: #2c3e50;
+            background: rgba(44, 62, 80, 0.85);
             border-radius: 15px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            height: 400px;
         }
 
         @media (max-width: 768px) {
@@ -458,7 +126,7 @@ Original file line number	Diff line number	Diff line change
             }
 
             button {
-                padding: 15px;
+                padding: 14px;
                 font-size: 1em;
             }
 
@@ -469,56 +137,95 @@ Original file line number	Diff line number	Diff line change
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" class="display" id="display" placeholder="Enter equation using 'x'">
-        <input type="text" class="result" id="result">
-        <div class="buttons">
-            <button id="clear">C</button>
-            <button id="backspace">←</button>
-            <button data-value="/">/</button>
-            <button data-value="*">*</button>
-            <button data-value="-">-</button>
-            <button data-value="7">7</button>
-            <button data-value="8">8</button>
-            <button data-value="9">9</button>
-            <button data-value="+">+</button>
-            <button data-value="4">4</button>
-            <button data-value="5">5</button>
-            <button data-value="6">6</button>
-            <button id="equal" class="equal">=</button>
-            <button data-value="1">1</button>
-            <button data-value="2">2</button>
-            <button data-value="3">3</button>
-            <button data-value="0">0</button>
-            <button data-value=".">.</button>
-            <button id="solve" class="solve">Solve</button>
-            <button data-value="√">√</button>
-            <button data-value="^">^</button>
-            <button data-value="%">%</button>
-            <button id="memory-add">M+</button>
-            <button id="memory-subtract">M-</button>
-            <button id="memory-recall">MR</button>
-            <button id="memory-clear">MC</button>
-        </div>
-        <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
-        <button class="scientific-toggle" id="scientific-toggle">Toggle Scientific Mode</button>
-        <button id="clear-history">Clear History</button>
-        <button id="copy-result">Copy Result</button>
-        <button id="toggle-angle-mode">Toggle Radians/Degrees</button>
-        <div class="scientific-buttons" id="scientific-buttons">
-            <button data-value="sin(">sin</button>
-            <button data-value="cos(">cos</button>
-            <button data-value="tan(">tan</button>
-            <button data-value="log(">log</button>
-            <button data-value="ln(">ln</button>
-            <button data-value="pi">π</button>
-            <button data-value="e">e</button>
-        </div>
-        <div class="history" id="history"></div>
-        <div id="graph-container" style="width: 100%; height: 400px;"></div>
+<div class="calculator">
+    <input type="text" class="display" id="display" placeholder="Enter equation using 'x'">
+    <input type="text" class="result" id="result" disabled>
+    <div class="buttons">
+        <button id="clear">C</button>
+        <button id="backspace">←</button>
+        <button data-value="/">/</button>
+        <button data-value="*">*</button>
+        <button data-value="-">-</button>
+        <button data-value="7">7</button>
+        <button data-value="8">8</button>
+        <button data-value="9">9</button>
+        <button data-value="+">+</button>
+        <button data-value="4">4</button>
+        <button data-value="5">5</button>
+        <button data-value="6">6</button>
+        <button id="equal">=</button>
+        <button data-value="1">1</button>
+        <button data-value="2">2</button>
+        <button data-value="3">3</button>
+        <button data-value="0">0</button>
+        <button data-value=".">.</button>
+        <button id="solve">Solve</button>
+        <button data-value="sqrt(">√</button>
+        <button data-value="^">^</button>
+        <button data-value="%">%</button>
+        <button id="memory-add">M+</button>
+        <button id="memory-subtract">M-</button>
+        <button id="memory-recall">MR</button>
+        <button id="memory-clear">MC</button>
     </div>
-    <script>
-        // Your existing JavaScript code remains unchanged
-    </script>
+    <button class="theme-toggle" id="theme-toggle">Toggle Theme</button>
+    <button class="scientific-toggle" id="scientific-toggle">Toggle Scientific Mode</button>
+    <button id="clear-history">Clear History</button>
+    <button id="copy-result">Copy Result</button>
+    <button id="toggle-angle-mode">Toggle Radians/Degrees</button>
+    <button id="graph-button">Graph Equation</button>
+    <div class="scientific-buttons" id="scientific-buttons">
+        <button data-value="sin(">sin</button>
+        <button data-value="cos(">cos</button>
+        <button data-value="tan(">tan</button>
+        <button data-value="log(">log</button>
+        <button data-value="ln(">ln</button>
+        <button data-value="pi">&pi;</button>
+        <button data-value="e">e</button>
+    </div>
+    <div class="history" id="history"></div>
+    <div id="graph-container"></div>
+</div>
+<script>
+function plotGraph(equation) {
+    try {
+        const xValues = [];
+        const yValues = [];
+        for (let x = -10; x <= 10; x += 0.1) {
+            xValues.push(x);
+            const y = math.evaluate(equation, { x });
+            yValues.push(y);
+        }
+        const trace = {
+            x: xValues,
+            y: yValues,
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#1abc9c', width: 3 },
+        };
+        const layout = {
+            title: {
+                text: 'Graph of the Equation',
+                font: { size: 22, color: '#ecf0f1' },
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                title: 'x',
+                gridcolor: '#7f8c8d',
+                color: '#ecf0f1',
+            },
+            yaxis: {
+                title: 'y',
+                gridcolor: '#7f8c8d',
+                color: '#ecf0f1',
+            }
+        };
+        Plotly.newPlot('graph-container', [trace], layout, { responsive: true });
+    } catch (err) {
+        alert('Invalid equation for graphing.');
+    }
+}
+</script>
 </body>
 </html>
