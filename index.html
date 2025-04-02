@@ -226,6 +226,64 @@ function plotGraph(equation) {
         alert('Invalid equation for graphing.');
     }
 }
+function plotGraph(equation) {
+    try {
+        const xValues = [];
+        const yValues = [];
+        for (let x = -10; x <= 10; x += 0.1) {
+            xValues.push(x);
+            const y = math.evaluate(equation, { x });
+            yValues.push(y);
+        }
+        const trace = {
+            x: xValues,
+            y: yValues,
+            type: 'scatter',
+            mode: 'lines',
+            name: equation,
+            line: { color: '#1abc9c', width: 3 },
+        };
+        const layout = {
+            title: {
+                text: 'Graph of the Equation(s)',
+                font: { size: 22, color: '#ecf0f1' },
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                title: 'x',
+                gridcolor: '#7f8c8d',
+                color: '#ecf0f1',
+            },
+            yaxis: {
+                title: 'y',
+                gridcolor: '#7f8c8d',
+                color: '#ecf0f1',
+            },
+            showlegend: true
+        };
+        if (!window.graphData) {
+            window.graphData = [];
+        }
+        window.graphData.push(trace);
+        Plotly.newPlot('graph-container', window.graphData, layout, {
+            responsive: true,
+            displaylogo: false,
+            modeBarButtonsToAdd: ['resetScale2d'],
+        });
+    } catch (err) {
+        alert('Invalid equation for graphing.');
+    }
+}
+
+document.getElementById('graph-button').addEventListener('click', () => {
+    const input = document.getElementById('display').value;
+    if (input.trim()) {
+        plotGraph(input.trim());
+    } else {
+        alert('Please enter an equation to graph.');
+    }
+});
 </script>
 </body>
 </html>
