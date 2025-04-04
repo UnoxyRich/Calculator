@@ -91,7 +91,7 @@
         }
 
         .scientific-buttons button {
-            background: #9b59b6;
+            background: #271d2b;
         }
 
         .scientific-buttons button:hover {
@@ -196,7 +196,12 @@ function plotGraph(equation) {
             xValues.push(x);
             let y;
             try {
-                y = math.evaluate(equation, { x });
+                // Validate the equation to ensure it only contains allowed characters
+                if (/^[0-9+\-*/^().x\s]*$/.test(equation)) {
+                    y = math.evaluate(equation, { x });
+                } else {
+                    throw new Error('Invalid characters in equation');
+                }
             } catch (err) {
                 y = NaN; // Assign NaN if the equation cannot be evaluated
             }
