@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test for index.html</title>
+</head>
+<body>
+    <h1>Tests for index.html</h1>
+    <script>
+        // Test if the document has the correct language attribute
+        function testLanguageAttribute() {
+            const lang = document.documentElement.lang;
+            if (lang === 'en') {
+                console.log('Test Passed: Language attribute is set to "en".');
+            } else {
+                console.error(`Test Failed: Language attribute is "${lang}" instead of "en".`);
+            }
+        }
+
+        // Test if the document has the correct direction attribute
+        function testDirectionAttribute() {
+            const dir = document.documentElement.dir;
+            if (dir === 'ltr') {
+                console.log('Test Passed: Direction attribute is set to "ltr".');
+            } else {
+                console.error(`Test Failed: Direction attribute is "${dir}" instead of "ltr".`);
+            }
+        }
+
+        // Run the tests
+        testLanguageAttribute();
+        testDirectionAttribute();
+    </script>
+</body>
+</html>
