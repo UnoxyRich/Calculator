@@ -198,7 +198,11 @@ function plotGraph(equation) {
             try {
                 // Validate the equation to ensure it only contains allowed characters
                 if (/^[0-9+\-*/^().x\s]*$/.test(equation)) {
-                    y = math.evaluate(equation, { x });
+                    try {
+                        y = math.evaluate(equation, { x });
+                    } catch (err) {
+                        y = NaN; // Assign NaN if the equation cannot be evaluated
+                    }
                 } else {
                     throw new Error('Invalid characters in equation');
                 }
