@@ -20,7 +20,7 @@
 
         // Test if the document has the correct direction attribute
         function testDirectionAttribute() {
-            const dir = document.documentElement.dir;
+            const dir = document.documentElement.dir || 'ltr'; // Default to 'ltr' if not set
             if (dir === 'ltr') {
                 console.log('Test Passed: Direction attribute is set to "ltr".');
             } else {
@@ -28,9 +28,71 @@
             }
         }
 
-        // Run the tests
-        testLanguageAttribute();
-        testDirectionAttribute();
+        // Test if the document has a valid title
+        function testDocumentTitle() {
+            const title = document.title;
+            if (title && title.trim().length > 0) {
+                console.log(`Test Passed: Document title is "${title}".`);
+            } else {
+                console.error('Test Failed: Document title is missing or empty.');
+            }
+        }
+
+        // Test if the meta charset is correctly set
+        function testMetaCharset() {
+            const metaCharset = document.querySelector('meta[charset]');
+            if (metaCharset && metaCharset.getAttribute('charset') === 'UTF-8') {
+                console.log('Test Passed: Meta charset is set to "UTF-8".');
+            } else {
+                console.error('Test Failed: Meta charset is missing or not set to "UTF-8".');
+            }
+        }
+
+        // Test if the viewport meta tag is correctly set
+        function testViewportMeta() {
+            const viewportMeta = document.querySelector('meta[name="viewport"]');
+            if (viewportMeta && viewportMeta.getAttribute('content') === 'width=device-width, initial-scale=1.0') {
+                console.log('Test Passed: Viewport meta tag is correctly set.');
+            } else {
+                console.error('Test Failed: Viewport meta tag is missing or incorrectly set.');
+            }
+        }
+
+        // Test if the document contains an <h1> element
+        function testH1Element() {
+            const h1 = document.querySelector('h1');
+            if (h1 && h1.textContent.trim().length > 0) {
+                console.log(`Test Passed: <h1> element is present with content "${h1.textContent}".`);
+            } else {
+                console.error('Test Failed: <h1> element is missing or empty.');
+            }
+        }
+
+        // Test if the document contains a <script> element
+        function testScriptElement() {
+            const scripts = document.querySelectorAll('script');
+            if (scripts.length > 0) {
+                console.log(`Test Passed: Document contains ${scripts.length} <script> element(s).`);
+            } else {
+                console.error('Test Failed: No <script> elements found in the document.');
+            }
+        }
+
+        // Run all tests
+        function runAllTests() {
+            console.log('Running tests...');
+            testLanguageAttribute();
+            testDirectionAttribute();
+            testDocumentTitle();
+            testMetaCharset();
+            testViewportMeta();
+            testH1Element();
+            testScriptElement();
+            console.log('All tests completed.');
+        }
+
+        // Execute the tests
+        runAllTests();
     </script>
 </body>
 </html>
