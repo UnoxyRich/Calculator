@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: #fff;
             margin: 0;
@@ -20,22 +20,22 @@
         }
 
         .calculator {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 450px;
-            backdrop-filter: blur(12px);
+            max-width: 500px;
+            backdrop-filter: blur(15px);
         }
 
         .display, .result {
             width: 100%;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             border: none;
             border-radius: 10px;
-            font-size: 1.4em;
+            font-size: 1.5em;
             background: rgba(255, 255, 255, 0.9);
             color: #2c3e50;
             text-align: right;
@@ -45,11 +45,11 @@
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 10px;
         }
 
         button {
-            padding: 18px;
+            padding: 15px;
             font-size: 1.2em;
             border: none;
             border-radius: 10px;
@@ -68,8 +68,8 @@
 
         .theme-toggle, .scientific-toggle, #clear-history, #copy-result, #toggle-angle-mode, #graph-button {
             width: 100%;
-            margin-top: 15px;
-            padding: 16px;
+            margin-top: 10px;
+            padding: 12px;
             font-size: 1.1em;
             border: none;
             border-radius: 10px;
@@ -90,7 +90,7 @@
             display: none;
             margin-top: 15px;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
         .scientific-buttons button {
@@ -102,19 +102,19 @@
         }
 
         .history {
-            margin-top: 20px;
+            margin-top: 15px;
             background: rgba(44, 62, 80, 0.85);
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
             max-height: 150px;
             overflow-y: auto;
             color: #ecf0f1;
-            font-size: 0.95em;
+            font-size: 0.9em;
             box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         #graph-container {
-            margin-top: 20px;
+            margin-top: 15px;
             background: rgba(44, 62, 80, 0.85);
             border-radius: 15px;
             padding: 10px;
@@ -128,8 +128,8 @@
                 width: 90%;
             }
 
-            button {
-                padding: 14px;
+            button {    
+                padding: 12px;
                 font-size: 1em;
             }
 
