@@ -12,7 +12,6 @@
             background: #f4f4f9;
             color: #333;
             margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,19 +23,28 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
             max-width: 400px;
+            width: 100%;
         }
 
-        .display {
+        .display, .history {
             width: 100%;
             padding: 15px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        .display {
             font-size: 1.2em;
             text-align: right;
-            background: #f9f9f9;
+        }
+
+        .history {
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 0.9em;
         }
 
         .buttons {
@@ -71,25 +79,14 @@
         .wide {
             grid-column: span 2;
         }
-
-        .history {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-height: 100px;
-            overflow-y: auto;
-            font-size: 0.9em;
-        }
     </style>
 </head>
 <body>
 <div class="calculator">
     <input type="text" class="display" id="display" placeholder="Enter equation">
-    <div class="buttons">
-        <button class="secondary" id="clear">C</button>
-        <button class="secondary" id="backspace">←</button>
+    <div class="buttons" id="buttons">
+        <button class="secondary" data-action="clear">C</button>
+        <button class="secondary" data-action="backspace">←</button>
         <button class="secondary" data-value="/">/</button>
         <button class="secondary" data-value="*">*</button>
         <button data-value="7">7</button>
@@ -103,14 +100,38 @@
         <button data-value="1">1</button>
         <button data-value="2">2</button>
         <button data-value="3">3</button>
-        <button id="equal">=</button>
+        <button data-action="equal">=</button>
         <button class="wide" data-value="0">0</button>
         <button data-value=".">.</button>
     </div>
     <div class="history" id="history"></div>
 </div>
 <script>
-    // JavaScript remains unchanged
+    const display = document.getElementById('display');
+    const history = document.getElementById('history');
+    const buttons = document.getElementById('buttons');
+
+    buttons.addEventListener('click', (e) => {
+        const target = e.target;
+        const value = target.dataset.value;
+        const action = target.dataset.action;
+
+        if (value) {
+            display.value += value;
+        } else if (action === 'clear') {
+            display.value = '';
+        } else if (action === 'backspace') {
+            display.value = display.value.slice(0, -1);
+        } else if (action === 'equal') {
+            try {
+                const result = math.evaluate(display.value);
+                display.value = result;
+                history.innerHTML += `<div>${display.value} = ${result}</div>`;
+            } catch {
+                display.value = 'Error';
+            }
+        }
+    });
 </script>
 </body>
 </html>
