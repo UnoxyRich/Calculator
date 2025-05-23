@@ -2,6 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Add scientific function buttons dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const sciButtons = [
+                { label: 'sin', value: 'sin(' },
+                { label: 'cos', value: 'cos(' },
+                { label: 'tan', value: 'tan(' },
+                { label: 'log', value: 'log(' },
+                { label: 'ln', value: 'ln(' },
+                { label: '√', value: 'sqrt(' },
+                { label: '^', value: '^' },
+                { label: 'π', value: 'pi' },
+                { label: 'e', value: 'e' }
+            ];
+            const buttons = document.getElementById('buttons');
+            if (buttons) {
+                const sciRow = document.createElement('div');
+                sciRow.className = 'buttons';
+                sciRow.style.marginBottom = '10px';
+                sciRow.style.gridTemplateColumns = 'repeat(5, 1fr)';
+                sciButtons.forEach(btn => {
+                    const b = document.createElement('button');
+                    b.textContent = btn.label;
+                    b.className = 'secondary';
+                    b.setAttribute('data-value', btn.value);
+                    sciRow.appendChild(b);
+                });
+                buttons.parentNode.insertBefore(sciRow, buttons);
+            }
+        });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graphing Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -9,8 +40,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f9;
-            color: #333;
+            background: #181a20;
+            color: #e0e0e0;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -19,10 +50,10 @@
         }
 
         .calculator {
-            background: #fff;
+            background: #23262f;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             max-width: 400px;
             width: 100%;
         }
@@ -31,9 +62,10 @@
             width: 100%;
             padding: 15px;
             margin-bottom: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #353945;
             border-radius: 5px;
-            background: #f9f9f9;
+            background: #1a1d23;
+            color: #e0e0e0;
         }
 
         .display {
@@ -59,21 +91,22 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            background: #007bff;
-            color: white;
+            background: #353945;
+            color: #e0e0e0;
             transition: background 0.3s ease;
         }
 
         button:hover {
-            background: #0056b3;
+            background: #4b4f5a;
         }
 
         .secondary {
-            background: #6c757d;
+            background: #3a3f4b;
+            color: #f5c518;
         }
 
         .secondary:hover {
-            background: #5a6268;
+            background: #505564;
         }
 
         .wide {
